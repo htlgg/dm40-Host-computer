@@ -417,7 +417,7 @@ class HotkeysScreen(tk.Frame):
             )
 
         self.canvas.create_text(
-            x + self._s(HL.LABEL_INDENT), cy, text=action_label(action), anchor="w",
+            x + self._s(HL.LABEL_INDENT), cy, text=action_label(action, self.app), anchor="w",
             font=label_font,
             fill=rgb_hex("text_primary" if enabled else "text_secondary"),
             tags=("hk_rows", f"hk_lbl_{action}"),

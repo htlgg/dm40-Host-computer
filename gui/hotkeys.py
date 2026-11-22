@@ -335,16 +335,53 @@ def sequence_from_event(event) -> str | None:
     return "-".join(parts)
 
 
-def action_label(action: str) -> str:
-    """Translated label shown on the HOTKEYS screen."""
+_MODE_GROUP_I18N = {
+    "VDC": "voltage",
+    "ADC": "current",
+    "OHM": "resistance",
+    "CAP": "capacitance",
+    "DIODE": "diode",
+    "Hz": "frequency",
+}
+
+
+def _range_label_at(app, index: int) -> str | None:
+    """Range name (e.g. ``6V``) for the 1-based index of the current mode."""
+    if app is None:
+        return None
+    try:
+        from core.parsing import MODEL
+        from core.ranges import ranges_for_kind
+
+        last = app.main_screen._last_display_measurement
+        kind = last[0].kind if last else None
+        if not kind:
+            return None
+        items = ranges_for_kind(kind, MODEL.model_name)
+        if 1 <= index <= len(items):
+            return items[index - 1][0]
+    except Exception:
+        return None
+    return None
+
+
+def action_label(action: str, app=None) -> str:
+    """Translated label shown on the HOTKEYS screen (plain-language)."""
     from core.i18n import t
 
     if action.startswith("range_index_"):
-        return t("hotkeys.action_range_index", n=action.rsplit("_", 1)[1])
+        index = int(action.rsplit("_", 1)[1])
+        label = _range_label_at(app, index)
+        if label:
+            return t("hotkeys.action_range_index_named", label=label)
+        return t("hotkeys.action_range_index", n=index)
     if action.startswith("mode_"):
         index = int(action.rsplit("_", 1)[1]) - 1
         if 0 <= index < len(MODE_CYCLE_GROUPS):
-            return f"{t('hotkeys.action_mode', n=index + 1)} ({MODE_CYCLE_GROUPS[index][0]})"
+            group = MODE_CYCLE_GROUPS[index][0]
+            key = _MODE_GROUP_I18N.get(group)
+            name = t(f"hotkeys.group_{key}") if key else group
+            return t("hotkeys.action_mode_named", name=name)
         return t("hotkeys.action_mode", n=index + 1)
     return t(f"hotkeys.action_{action}")
 

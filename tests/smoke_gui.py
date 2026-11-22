@@ -251,7 +251,7 @@ def run_checks(root: tk.Tk, app) -> None:
         app._last_range_flag = 0x00
 
     # Bindings are registered on the toplevel (so no widget needs focus).
-    for sequence in ("<Tab>", "<Shift-Tab>", "<KeyPress-1>", "<Escape>", "<F1>"):
+    for sequence in ("<Tab>", "<Shift-Tab>", "<KeyPress-r>", "<Escape>", "<F1>"):
         check_true(f"binding {sequence}", bool(root.bind(sequence)), f"got {root.bind(sequence)!r}")
 
     # --- range cycling ------------------------------------------------
@@ -262,6 +262,9 @@ def run_checks(root: tk.Tk, app) -> None:
     check("label after Shift+Tab", app.main_screen._last_range_label, "600mV")
 
     # --- direct range selection ---------------------------------------
+    # These shortcuts are hidden by default, so switch them on for the test.
+    for _n in (1, 4):
+        app.hotkeys.set_action_enabled(f"range_index_{_n}", True)
     app._last_range_flag = 0x00
     check("key 4 → 600V", press("<KeyPress-4>"), [("range", 0x18)])
     check("label after key 4", app.main_screen._last_range_label, "600V")

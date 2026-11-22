@@ -25,7 +25,12 @@ DEFAULTS = {
     "beep_style_on": "single",
     "beep_style_off": "single",
     "hotkey_map": {},
-    "hotkey_disabled": [],
+    # Direct range picking is an advanced shortcut – hidden until asked for.
+    "hotkey_disabled": [
+        "range_index_1", "range_index_2", "range_index_3",
+        "range_index_4", "range_index_5", "range_index_6",
+        "range_index_7", "range_index_8", "range_index_9",
+    ],
     "language": "en-US",
     "gui_font": "Arial",
 }
