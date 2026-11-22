@@ -48,6 +48,10 @@ class DM40App:
         self._client_w = int(display_layout.SCREEN_W * self.scale)
         self._rebuilding = False
         self._fullscreen = False
+        self._suppress_resize = False
+        self._startup_scale = self.scale
+        self._startup_pos: tuple[int, int] | None = None
+        self._windowed_pos: tuple[int, int] | None = None
         self._configure_after: str | None = None
 
         self.root.title(t("app.title"))
@@ -117,6 +121,8 @@ class DM40App:
         self.global_hotkeys.start()
         schedule_windows_titlebar(self.root)
         self.root.bind("<Configure>", self._on_configure, add="+")
+        # Remember where the window opened so leaving full screen can restore it.
+        self.root.after(900, self._remember_startup_pos)
         if self._needs_device_setup():
             self.show_connect_screen(auto_scan=True)
         else:
@@ -233,41 +239,78 @@ class DM40App:
 
     def _apply_resize(self) -> None:
         self._configure_after = None
-        if self._rebuilding:
+        if self._rebuilding or self._suppress_resize:
             return
         try:
             width = self.root.winfo_width()
             height = self.root.winfo_height()
-            self._fullscreen = bool(self.root.attributes("-fullscreen"))
+            fullscreen = bool(self.root.attributes("-fullscreen"))
         except tk.TclError:
             return
+
+        # Left full screen through the system button / Win+Up?
+        if self._fullscreen and not fullscreen:
+            self._exit_fullscreen()
+            return
+        self._fullscreen = fullscreen
         if width < 80 or height < 60:
             return
         logical_h = self._logical_height_with_console()
         self._rebuild_screens(min(width / display_layout.SCREEN_W, height / logical_h))
 
     def toggle_fullscreen(self) -> None:
-        """Full screen (content scaled to fit) ⇄ windowed."""
-        if not getattr(self, "_fullscreen", False):
+        """Full screen ⇄ the size/scale the app was started with."""
+        if not self._fullscreen:
             self._windowed_scale = self.scale
+            self._windowed_pos = (self.root.winfo_x(), self.root.winfo_y())
             self._fullscreen = True
-        else:
-            self._fullscreen = False
-        try:
-            self.root.attributes("-fullscreen", self._fullscreen)
-        except tk.TclError:
-            pass
-        if self._fullscreen:
+            try:
+                self.root.attributes("-fullscreen", True)
+            except tk.TclError:
+                self._fullscreen = False
+                return
             self.root.after(320, self._apply_resize)
         else:
-            target = getattr(self, "_windowed_scale", self.scale)
-            self.root.after(320, lambda: self._restore_windowed(target))
+            self._exit_fullscreen()
 
-    def _restore_windowed(self, scale: float) -> None:
-        """Return from full screen to the scale used before it."""
+    def _exit_fullscreen(self) -> None:
+        """Return to the startup ratio and position (not the huge screen size)."""
         self._fullscreen = False
-        self._rebuild_screens(scale)
+        self._suppress_resize = True
+        try:
+            self.root.attributes("-fullscreen", False)
+        except tk.TclError:
+            pass
+
+        target = self._startup_scale or self.scale
+        self._rebuild_screens(target)
         self._apply_window_size()
+
+        position = self._startup_pos or self._windowed_pos
+        if position:
+            try:
+                self.root.geometry(f"+{max(0, position[0])}+{max(0, position[1])}")
+            except tk.TclError:
+                pass
+
+        if self._configure_after is not None:
+            try:
+                self.root.after_cancel(self._configure_after)
+            except tk.TclError:
+                pass
+            self._configure_after = None
+        self.root.after(500, self._release_resize_guard)
+
+    def _release_resize_guard(self) -> None:
+        self._suppress_resize = False
+
+    def _remember_startup_pos(self) -> None:
+        """Store the window position used at launch, to restore it later."""
+        if self._startup_pos is None and not self._fullscreen:
+            try:
+                self._startup_pos = (self.root.winfo_x(), self.root.winfo_y())
+            except tk.TclError:
+                pass
 
     def _rebuild_screens(self, scale: float) -> None:
         """Re-create every screen at a new scale, keeping the runtime state."""
