@@ -1,7 +1,7 @@
 # language name: Čeština (cs-CZ)
 
 [app]
-title = "DM40 Wireless"
+title = "DM40-Host-computer"
 
 [setup]
 btn_manual = "Ručně"

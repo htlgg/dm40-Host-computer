@@ -27,7 +27,7 @@ set "SKIP=%GRAY%[SKIP]%RST%"
 cd /d "%~dp0"
 
 echo %CYAN%╔════════════════════════════════════════════════════════════════════════╗%RST%
-echo %CYAN%║%RST%                 %WHITE%DM40 Wireless - Nuitka + MSVC Build%RST%                    %CYAN%║%RST%
+echo %CYAN%║%RST%                 %WHITE%DM40-Host-computer - Nuitka + MSVC Build%RST%                    %CYAN%║%RST%
 echo %CYAN%║%RST%                   %GRAY%Bluetooth Multimeter Desktop App%RST%                     %CYAN%║%RST%
 echo %CYAN%╚════════════════════════════════════════════════════════════════════════╝%RST%
 echo.
@@ -57,7 +57,7 @@ if not exist .venv\Scripts\python.exe (
 set "PY=.venv\Scripts\python.exe"
 
 REM --- Kill running instance (avoids file-lock errors) ---
-taskkill /IM "DM40 Wireless.exe" /F >nul 2>&1
+taskkill /IM "DM40-Host-computer.exe" /F >nul 2>&1
 timeout /t 1 /nobreak >nul
 
 REM --- Ensure Nuitka is installed ---
@@ -129,15 +129,15 @@ echo.
 echo %STEP%[3/4]%RST% %WHITE%Building with Nuitka --standalone...%RST%
 echo.
 if exist "dist\app.dist" rmdir /S /Q "dist\app.dist"
-if exist "dist\DM40 Wireless" rmdir /S /Q "dist\DM40 Wireless"
+if exist "dist\DM40-Host-computer" rmdir /S /Q "dist\DM40-Host-computer"
 
 "%PY%" -m nuitka ^
   --standalone ^
   --windows-console-mode=disable ^
   --windows-icon-from-ico=images/app.ico ^
   --company-name="Urobotos" ^
-  --product-name="DM40 Wireless" ^
-  --file-description="DM40 Wireless - Bluetooth multimeter desktop app" ^
+  --product-name="DM40-Host-computer" ^
+  --file-description="DM40-Host-computer - Bluetooth multimeter desktop app" ^
   --file-version=1.2.0 ^
   --product-version=1.2.0 ^
   --copyright="Copyright (C) 2026 Urobotos" ^
@@ -147,7 +147,7 @@ if exist "dist\DM40 Wireless" rmdir /S /Q "dist\DM40 Wireless"
   --include-package=bleak ^
   --include-package=winrt ^
   --output-dir=dist ^
-  --output-filename="DM40 Wireless.exe" ^
+  --output-filename="DM40-Host-computer.exe" ^
   --assume-yes-for-downloads ^
   --remove-output ^
   --msvc=latest ^
@@ -163,42 +163,42 @@ if errorlevel 1 (
 REM --- Verify output and prepare distribution folder ---
 echo.
 echo %STEP%[4/4]%RST% %WHITE%Verifying output and copying external assets...%RST%
-if not exist "dist\app.dist\DM40 Wireless.exe" (
+if not exist "dist\app.dist\DM40-Host-computer.exe" (
     echo %ERROR% Output exe not found in dist\app.dist\
     pause
     exit /b 1
 )
 
 REM Rename Nuitka default folder to a clear distribution name
-move /Y "dist\app.dist" "dist\DM40 Wireless" >nul
+move /Y "dist\app.dist" "dist\DM40-Host-computer" >nul
 if errorlevel 1 (
-    echo %ERROR% Failed to rename dist\app.dist to dist\DM40 Wireless
+    echo %ERROR% Failed to rename dist\app.dist to dist\DM40-Host-computer
     pause
     exit /b 1
 )
 
 REM Copy i18n language files next to the exe (external, editable)
 if exist "i18n" (
-    if not exist "dist\DM40 Wireless\i18n" mkdir "dist\DM40 Wireless\i18n"
-    xcopy /Y /E "i18n\*.toml" "dist\DM40 Wireless\i18n\" >nul 2>&1
-    echo %INFO% i18n\ copied to: dist\DM40 Wireless\i18n\
+    if not exist "dist\DM40-Host-computer\i18n" mkdir "dist\DM40-Host-computer\i18n"
+    xcopy /Y /E "i18n\*.toml" "dist\DM40-Host-computer\i18n\" >nul 2>&1
+    echo %INFO% i18n\ copied to: dist\DM40-Host-computer\i18n\
 )
 
 REM Copy settings template as default config
-if not exist "dist\DM40 Wireless\settings.json" (
-    copy /Y "settings.example.json" "dist\DM40 Wireless\settings.json" >nul 2>&1
-    echo %INFO% settings.example.json copied to: dist\DM40 Wireless\settings.json
+if not exist "dist\DM40-Host-computer\settings.json" (
+    copy /Y "settings.example.json" "dist\DM40-Host-computer\settings.json" >nul 2>&1
+    echo %INFO% settings.example.json copied to: dist\DM40-Host-computer\settings.json
 )
 
 echo.
 echo %CYAN%╔════════════════════════════════════════════════════════════════════════╗%RST%
 echo %CYAN%║%RST%                            %GREEN%Build succeeded! %RST%                           %CYAN%║%RST%
 echo %CYAN%╟————————————————————————————————————————————————————————————————————————╢%RST%
-echo %CYAN%║%RST%  %WHITE%Output folder:%RST% dist\DM40 Wireless\                                    %CYAN%║%RST%
+echo %CYAN%║%RST%  %WHITE%Output folder:%RST% dist\DM40-Host-computer\                                    %CYAN%║%RST%
 echo %CYAN%║%RST%                                                                        %CYAN%║%RST%
 echo %CYAN%║%RST%  %WHITE%Distribution folder contents:%RST%                                         %CYAN%║%RST%
-echo %CYAN%║%RST%    DM40 Wireless\                                                      %CYAN%║%RST%
-echo %CYAN%║%RST%    ├── DM40 Wireless.exe                                               %CYAN%║%RST%
+echo %CYAN%║%RST%    DM40-Host-computer\                                                      %CYAN%║%RST%
+echo %CYAN%║%RST%    ├── DM40-Host-computer.exe                                               %CYAN%║%RST%
 echo %CYAN%║%RST%    ├── i18n\      (language files)                                     %CYAN%║%RST%
 echo %CYAN%║%RST%    ├── settings.json                                                   %CYAN%║%RST%
 echo %CYAN%║%RST%    └── *.dll      (runtime DLLs / bundled data)                        %CYAN%║%RST%

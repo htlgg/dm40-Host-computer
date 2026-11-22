@@ -1,7 +1,7 @@
 # language name: 繁體中文 (zh-TW)
 
 [app]
-title = "DM40 Wireless"
+title = "DM40-Host-computer"
 
 [setup]
 btn_manual = "手動輸入"

@@ -24,11 +24,16 @@ def _hwnd(root: tk.Tk) -> int | None:
     try:
         import ctypes
 
+        user32 = ctypes.windll.user32
+        # 64-bit handles must not be truncated to int32, otherwise the DWM call
+        # silently targets a bogus window (dark title bar stops working).
+        user32.GetParent.argtypes = [ctypes.c_void_p]
+        user32.GetParent.restype = ctypes.c_void_p
         wid = root.winfo_id()
         if not wid:
             return None
-        hwnd = ctypes.windll.user32.GetParent(wid)
-        return hwnd or wid
+        hwnd = user32.GetParent(ctypes.c_void_p(wid))
+        return int(hwnd) if hwnd else int(wid)
     except Exception:
         return None
 
@@ -37,8 +42,13 @@ def _set_dwm_attr(hwnd: int, attr: int, value: int) -> None:
     try:
         import ctypes
 
-        ctypes.windll.dwmapi.DwmSetWindowAttribute(
-            hwnd, attr, ctypes.byref(ctypes.c_int(value)), ctypes.sizeof(ctypes.c_int),
+        dwmapi = ctypes.windll.dwmapi
+        dwmapi.DwmSetWindowAttribute.argtypes = [
+            ctypes.c_void_p, ctypes.c_uint, ctypes.c_void_p, ctypes.c_uint,
+        ]
+        data = ctypes.c_int(value)
+        dwmapi.DwmSetWindowAttribute(
+            ctypes.c_void_p(hwnd), attr, ctypes.byref(data), ctypes.sizeof(data),
         )
     except Exception:
         pass
@@ -88,6 +98,9 @@ def schedule_windows_titlebar(root: tk.Tk, **kwargs) -> None:
         pending["id"] = root.after(50, _apply)
 
     root.after_idle(_apply)
+    # The wrapper window can be created/recreated while mapping – apply once more.
+    root.after(200, _apply)
+    root.after(600, _apply)
     for seq in ("<FocusIn>", "<FocusOut>", "<Map>"):
         root.bind(seq, _schedule, add="+")
 

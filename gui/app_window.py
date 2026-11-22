@@ -5,7 +5,7 @@ import time
 import tkinter as tk
 
 from ble.worker import BleCallbacks, BleWorker
-from core.config import CMD_DISCOVERY, CMD_POLL
+from core.config import CMD_DISCOVERY, CMD_POLL, IMAGES_DIR
 from core.protocol_constants import CMD_ID
 from core.i18n import t, get_i18n
 from gui import layout as display_layout
@@ -52,6 +52,7 @@ class DM40App:
 
         self.root.title(t("app.title"))
         self.root.resizable(True, True)
+        self._apply_window_icon()
         self.root.configure(bg=rgb_hex("background"))
 
         self._ui_column = tk.Frame(root, bg=rgb_hex("background"))
@@ -332,6 +333,15 @@ class DM40App:
             self._rebuilding = False
         if not self._fullscreen:
             self._apply_window_size()
+
+    def _apply_window_icon(self) -> None:
+        """Show the DM40 icon in the title bar / taskbar instead of Tk's feather."""
+        try:
+            icon = IMAGES_DIR / "app.ico"
+            if icon.exists():
+                self.root.iconbitmap(default=str(icon))
+        except Exception:
+            pass
 
     def _resize_container(self) -> None:
         dm40_h = self._dm40_logical_height()

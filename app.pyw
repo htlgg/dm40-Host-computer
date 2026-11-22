@@ -1,4 +1,4 @@
-"""DM40 Wireless – entry point (no console window on Windows)."""
+"""DM40-Host-computer – entry point (no console window on Windows)."""
 
 import sys
 from pathlib import Path

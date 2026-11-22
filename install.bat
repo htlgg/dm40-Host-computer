@@ -27,7 +27,7 @@ set "SKIP=%GRAY%[SKIP]%RST%"
 cd /d "%~dp0"
 
 echo %CYAN%╔════════════════════════════════════════════════════════════════════════╗%RST%
-echo %CYAN%║%RST%                     %WHITE%DM40 Wireless - Installation%RST%                       %CYAN%║%RST%
+echo %CYAN%║%RST%                     %WHITE%DM40-Host-computer - Installation%RST%                       %CYAN%║%RST%
 echo %CYAN%║%RST%                   %GRAY%Bluetooth Multimeter Desktop App%RST%                     %CYAN%║%RST%
 echo %CYAN%╚════════════════════════════════════════════════════════════════════════╝%RST%
 echo.
@@ -102,7 +102,7 @@ echo %CYAN%╔══════════════════════
 echo %CYAN%║%RST%                      %GREEN%Installation was successful! %RST%                     %CYAN%║%RST%
 echo %CYAN%╟————————————————————————————————————————————————————————————————————————╢%RST%
 echo %CYAN%║%RST%                                                                        %CYAN%║%RST%
-echo %CYAN%║%RST% %WHITE%◦ For development, launch:%RST% %YELLOW%DM40 Wireless.bat%RST%                           %CYAN%║%RST%
+echo %CYAN%║%RST% %WHITE%◦ For development, launch:%RST% %YELLOW%DM40-Host-computer.bat%RST%                           %CYAN%║%RST%
 echo %CYAN%║%RST% %WHITE%◦ To build, run:%RST% %YELLOW%build_exe.bat%RST%                                         %CYAN%║%RST%
 echo %CYAN%║%RST%                                                                        %CYAN%║%RST%
 echo %CYAN%╚════════════════════════════════════════════════════════════════════════╝%RST%

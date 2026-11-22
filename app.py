@@ -1,4 +1,4 @@
-"""DM40 Wireless – dev entry (console shows errors). For daily use: app.pyw or DM40 Wireless.bat."""
+"""DM40-Host-computer – dev entry (console shows errors). For daily use: app.pyw or DM40-Host-computer.bat."""
 
 import sys
 from pathlib import Path
@@ -12,6 +12,6 @@ from gui.app_window import run_app
 
 if __name__ == "__main__":
     if not acquire():
-        focus_existing("DM40 Wireless")
+        focus_existing("DM40-Host-computer")
         sys.exit(0)
     run_app()
