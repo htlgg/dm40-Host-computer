@@ -1,0 +1,23 @@
+{
+  "target_mac": "",
+  "model_name": "",
+  "device_counts": 0,
+  "window_scale": 1.0,
+  "show_graph": false,
+  "debug_click_hotspots": false,
+  "debug_display_layout": false,
+  "mini_app": false,
+  "always_on_top": false,
+  "raw_console": false,
+  "hotkeys": true,
+  "global_hotkeys": false,
+  "global_swallow": true,
+  "beep_enabled": true,
+  "beep_volume": 60,
+  "beep_style_on": "single",
+  "beep_style_off": "single",
+  "hotkey_map": {},
+  "hotkey_disabled": [],
+  "language": "en-US",
+  "gui_font": "Arial"
+}

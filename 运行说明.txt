@@ -1,0 +1,35 @@
+﻿DM40 Wireless 开源版（Python 源码）
+================================================
+
+运行环境：Windows 10 / 11 64 位，Python 3.10 以上（开发与测试用 3.14）
+硬件要求：电脑带蓝牙（BLE），DM40A / DM40B / DM40C 万用表
+
+一、最快的方式
+  1. 双击 install.bat        （自动创建虚拟环境并安装依赖）
+  2. 双击 app.pyw            （或 “DM40 Wireless.bat”）
+     没有 .py 文件关联时用：python app.py
+
+二、手动方式
+  pip install -r requirements.txt
+  python app.py
+
+三、依赖
+  bleak >= 0.21    蓝牙 BLE 通信（Windows 上会自动安装 winrt-* 组件）
+  Pillow >= 10.0   界面图片资源
+
+四、自己打包成 exe
+  先 pip install pyinstaller，再双击 build_exe.bat
+  （打包配置见 DM40 Wireless.spec，输出在 dist 目录）
+
+五、目录说明
+  app.py / app.pyw     入口（pyw 不弹控制台）
+  ble/                 蓝牙连接、扫描、协议收发
+  core/                数据解析、配置、i18n
+  gui/                 界面（纯 Tkinter Canvas 绘制）
+  i18n/                界面语言（5 种）
+  images/              图标与图片素材
+  tests/               自动化测试（可直接 python 运行）
+  settings.example.json 默认配置示例（首次运行会生成 settings.json）
+
+六、许可证
+  MIT，见 LICENSE。可自由使用、修改、分发（保留版权声明）。

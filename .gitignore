@@ -1,0 +1,53 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.eggs/
+dist-info/
+
+# Virtual environment
+.venv/
+venv/
+ENV/
+
+# PyInstaller / Nuitka build output
+build/
+dist/
+*.spec
+
+# Local settings and UI state (template: settings.example.json)
+settings.json
+dm40_ui_state.json
+
+# IDE / editor
+.cursor/
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Logs and temp files
+*.log
+*.tmp
+
+# Local notes / BLE sniff logs (may contain MAC addresses, dev protocol dumps)
+sniffing.txt
+nRF_connect_ble_log.txt
+
+# Backups and design sources
+images/Photoshop/
+*.psd
+
+# Release artifacts (zip created by release_zip.bat)
+release/
+*.zip
+CLAUDE.md

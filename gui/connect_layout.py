@@ -1,0 +1,45 @@
+"""Connect (cold run) screen layout."""
+
+from gui.layout import MODE_BTN_GAP, MODE_BTN_H, MODE_BTN_MARGIN, MODE_BTN_Y, SCREEN_W, TOP_BAR_H
+
+SETUP_TITLE_FONT = 13
+SETUP_TITLE_Y = 18       # Align title text in top bar on Y axis
+SETUP_HINT_Y = 52
+SETUP_HINT_FONT = 12
+SETUP_STATUS_Y = 76
+SETUP_STATUS_FONT = 12
+SETUP_LIST_MARGIN = 5
+SETUP_LIST_TOP = 96
+SETUP_ROW_H = 38
+SETUP_ROW_GAP = 4
+SETUP_ROW_FONT = 12
+SETUP_ROW_PAD_LEFT = 10
+SETUP_BTN_COUNT = 3
+SETUP_BTN_LABELS = ("Search", "Connect", "Manual")
+
+
+def setup_btn_labels() -> tuple[str, ...]:
+    """Return translated bottom button labels (Search, Connect, Manual)."""
+    from core.i18n import t
+    return (
+        t("setup.btn_search"),
+        t("setup.btn_connect"),
+        t("setup.btn_manual"),
+    )
+
+
+def setup_list_bottom() -> int:
+    return MODE_BTN_Y - 8
+
+
+def setup_button_slots() -> list[tuple[int, int, int, int]]:
+    """(x, y, w, h) for Search and Connect – same row as MODE buttons."""
+    y = MODE_BTN_Y
+    usable = SCREEN_W - 2 * MODE_BTN_MARGIN - (SETUP_BTN_COUNT - 1) * MODE_BTN_GAP
+    w = usable // SETUP_BTN_COUNT
+    slots = []
+    x = MODE_BTN_MARGIN
+    for _ in range(SETUP_BTN_COUNT):
+        slots.append((x, y, w, MODE_BTN_H))
+        x += w + MODE_BTN_GAP
+    return slots
