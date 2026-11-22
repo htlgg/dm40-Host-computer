@@ -123,6 +123,7 @@ class DM40App:
         self.root.bind("<Configure>", self._on_configure, add="+")
         # Remember where the window opened so leaving full screen can restore it.
         self.root.after(900, self._remember_startup_pos)
+        self.root.after(1100, self._startup_titlebar_refresh)
         if self._needs_device_setup():
             self.show_connect_screen(auto_scan=True)
         else:
@@ -311,6 +312,34 @@ class DM40App:
                 self._startup_pos = (self.root.winfo_x(), self.root.winfo_y())
             except tk.TclError:
                 pass
+
+    def _startup_titlebar_refresh(self) -> None:
+        """Make the dark caption stick on the very first frame.
+
+        Windows only paints the DWM dark caption once the frame has been
+        rearranged, which is why the bar turned dark after the user resized the
+        window. Do that rearrangement ourselves right after startup.
+        """
+        try:
+            width, height = self.root.winfo_width(), self.root.winfo_height()
+            if width > 10 and height > 10:
+                self.root.geometry(f"{width + 1}x{height}")
+                self.root.update_idletasks()
+                self.root.geometry(f"{width}x{height}")
+                self.root.update_idletasks()
+        except tk.TclError:
+            pass
+        self._reapply_titlebar()
+        self.root.after(180, self._reapply_titlebar)
+
+    def _reapply_titlebar(self) -> None:
+        try:
+            from gui.win_titlebar import apply_windows_titlebar
+
+            if self.root.winfo_exists():
+                apply_windows_titlebar(self.root)
+        except Exception:
+            pass
 
     def _rebuild_screens(self, scale: float) -> None:
         """Re-create every screen at a new scale, keeping the runtime state."""
