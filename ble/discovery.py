@@ -17,6 +17,7 @@ class DM40Device:
     model_name: str
     device_counts: int
     known: bool = True          # False = scanned but the name is not a DM40 one
+    connected: bool = False     # already linked to this app right now
 
     def list_label(self) -> str:
         if not self.known:

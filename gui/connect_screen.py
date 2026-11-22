@@ -89,6 +89,18 @@ class ConnectScreen(tk.Frame):
             self.app.show_settings_screen, tag="connect_hit_settings",
         )
 
+    def _current_device(self) -> DM40Device | None:
+        """The meter this app is already using (it stops advertising when linked)."""
+        mac = (self.app.settings.get("target_mac") or "").strip()
+        if not mac:
+            return None
+        model = self.app.settings.get("model_name") or "DM40C"
+        counts = int(self.app.settings.get("device_counts") or 60000)
+        return DM40Device(
+            address=mac, name=model, model_name=model, device_counts=counts,
+            known=True, connected=bool(getattr(self.app.ble, "connected", False)),
+        )
+
     def _has_device(self) -> bool:
         return bool((self.app.settings.get("target_mac") or "").strip())
 
@@ -228,6 +240,12 @@ class ConnectScreen(tk.Frame):
 
     def on_show(self, *, auto_scan: bool = False) -> None:
         self._show_bt_icon()
+        current = self._current_device()
+        if current is not None:
+            self._devices = [current]
+            self._selected = 0
+            self._rebuild_device_list()
+            self._set_status(t("setup.status_connected_only", name=current.name))
         if auto_scan:
             self.app.root.after(300, self.start_scan)
 
@@ -238,10 +256,17 @@ class ConnectScreen(tk.Frame):
         if self._scanning:
             return
         self._scanning = True
-        self._devices = []
-        self._selected = -1
+        # Keep the meter we are already linked to – it stops advertising, so a
+        # scan alone would never list it.
+        current = self._current_device()
+        self._devices = [current] if current is not None else []
+        self._selected = 0 if current is not None else -1
         self.canvas.delete("connect_row")
-        self._set_status(t("setup.status_scanning"))
+        self._rebuild_device_list()
+        if current is not None:
+            self._set_status(t("setup.status_connected_only", name=current.name))
+        else:
+            self._set_status(t("setup.status_scanning"))
         self._start_bt_pulse()
         threading.Thread(target=self._scan_worker, daemon=True).start()
         self._poll_scan_result()
@@ -270,6 +295,10 @@ class ConnectScreen(tk.Frame):
 
     def _scan_done(self, devices: list[DM40Device], error: str | None) -> None:
         self._stop_scan_ui()
+        current = self._current_device()
+        if current is not None:
+            rest = [d for d in devices if d.address.upper() != current.address.upper()]
+            devices = [current] + rest
         self._devices = devices
         self._selected = 0 if devices else -1
         self._rebuild_device_list()
@@ -310,7 +339,11 @@ class ConnectScreen(tk.Frame):
             )
             label = dev.list_label()
             fill = "text_primary"
-            if not dev.known:
+            if dev.connected:
+                label = f"{label}   ·   {t('setup.connected_suffix')}"
+                # selected row is blue – keep the text readable
+                fill = "text_primary" if active else "buttons_active"
+            elif not dev.known:
                 label = f"{label}   ·   {t('setup.unknown_suffix')}"
                 fill = "text_secondary"
             self.canvas.create_text(

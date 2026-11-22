@@ -4,6 +4,8 @@
 title = "DM40-Host-computer"
 
 [setup]
+connected_suffix = "connected"
+status_connected_only = "Connected to {name}; press Search to look for other meters"
 btn_manual = "Manual"
 manual_title = "Enter Bluetooth address"
 manual_hint = "Format AA:BB:CC:DD:EE:FF (12 hex digits also work)"

@@ -4,6 +4,8 @@
 title = "DM40-Host-computer"
 
 [setup]
+connected_suffix = "已連線"
+status_connected_only = "目前連線 {name}；點「搜尋」可尋找其他裝置"
 btn_manual = "手動輸入"
 manual_title = "手動輸入藍牙位址"
 manual_hint = "格式 AA:BB:CC:DD:EE:FF（也可直接貼 12 位）"

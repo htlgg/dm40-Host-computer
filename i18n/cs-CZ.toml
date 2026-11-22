@@ -4,6 +4,8 @@
 title = "DM40-Host-computer"
 
 [setup]
+connected_suffix = "připojeno"
+status_connected_only = "Připojeno k {name}; hledat další lze tlačítkem Hledat"
 btn_manual = "Ručně"
 manual_title = "Zadat Bluetooth adresu"
 manual_hint = "Formát AA:BB:CC:DD:EE:FF (i 12 znaků)"

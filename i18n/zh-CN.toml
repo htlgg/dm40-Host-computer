@@ -4,6 +4,8 @@
 title = "DM40-Host-computer"
 
 [setup]
+connected_suffix = "已连接"
+status_connected_only = "当前已连接 {name}；点“搜索”可查找其他设备"
 btn_manual = "手动输入"
 manual_title = "手动输入蓝牙地址"
 manual_hint = "格式 AA:BB:CC:DD:EE:FF（也可直接贴 12 位）"

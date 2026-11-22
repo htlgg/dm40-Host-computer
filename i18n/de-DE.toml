@@ -4,6 +4,8 @@
 title = "DM40-Host-computer"
 
 [setup]
+connected_suffix = "verbunden"
+status_connected_only = "Verbunden mit {name}; Suche findet weitere Geräte"
 btn_manual = "Manuell"
 manual_title = "Bluetooth-Adresse eingeben"
 manual_hint = "Format AA:BB:CC:DD:EE:FF (auch 12 Stellen)"
