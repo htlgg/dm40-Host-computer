@@ -14,10 +14,10 @@ DM40-Host-computer — Alientek DM40 万用表蓝牙上位机（快捷键增强�
 
 <p align="center">
   <b>⬇ 下载 Windows 版 / Download</b>：
-  <a href="https://github.com/htlgg/dm40-Host-computer/releases/download/v1.0.0/DM40-Host-computer-v1.0.0.zip">
-    DM40-Host-computer-v1.0.0.zip
+  <a href="https://github.com/htlgg/dm40-Host-computer/releases/download/v1.0.1/DM40-Host-computer-v1.0.1-win64.zip">
+    DM40-Host-computer-v1.0.1-win64.zip
   </a>
-  （21.5 MB，解压后双击 <code>DM40-Host-computer.exe</code>，无需安装 Python）
+  （21.5 MB · <b>Windows 10/11 64 位</b>，解压后双击 <code>DM40-Host-computer.exe</code>，无需安装 Python）
 </p>
 
 ---
@@ -47,7 +47,7 @@ Windows 桌面端上位机，通过**蓝牙 BLE** 连接正点原子 **DM40A / D
 
 **方式一：直接运行（推荐给普通用户）**
 
-1. 下载 [DM40-Host-computer-v1.0.0.zip](https://github.com/htlgg/dm40-Host-computer/releases/download/v1.0.0/DM40-Host-computer-v1.0.0.zip)
+1. 下载 [DM40-Host-computer-v1.0.1-win64.zip](https://github.com/htlgg/dm40-Host-computer/releases/download/v1.0.1/DM40-Host-computer-v1.0.1-win64.zip)
 2. 解压到任意目录，双击 `DM40-Host-computer.exe`（无需安装 Python）
 
 **方式二：从源码运行**
@@ -140,7 +140,7 @@ display and adds a hotkey layer on top of it.
 
 ### Getting started
 
-Download `DM40-Host-computer-v1.0.0.zip` from the
+Download `DM40-Host-computer-v1.0.1-win64.zip` from the
 [latest release](https://github.com/htlgg/dm40-Host-computer/releases/latest)
 and run `DM40-Host-computer.exe`, or run from source:
 
