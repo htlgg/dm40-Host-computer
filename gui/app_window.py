@@ -225,6 +225,24 @@ class DM40App:
             return
         if self._rebuilding:
             return
+
+        # Maximising / restoring must be handled immediately: waiting for the
+        # debounce lets the window sit at an intermediate size for ~0.3 s.
+        if not self._suppress_resize:
+            try:
+                zoomed = self.root.state() == "zoomed"
+            except tk.TclError:
+                zoomed = False
+            if zoomed != self._zoomed:
+                if self._configure_after is not None:
+                    try:
+                        self.root.after_cancel(self._configure_after)
+                    except tk.TclError:
+                        pass
+                    self._configure_after = None
+                self._apply_resize()
+                return
+
         if self._configure_after is not None:
             try:
                 self.root.after_cancel(self._configure_after)
@@ -298,26 +316,60 @@ class DM40App:
         self._restore_windowed_state()
 
     def _restore_windowed_state(self) -> None:
-        """Back to the startup scale, size and position."""
+        """Back to the startup scale in one step, centred on the screen."""
         self._suppress_resize = True
+        self._fullscreen = False
+        self._zoomed = False
+        try:
+            self.root.attributes("-fullscreen", False)
+        except tk.TclError:
+            pass
+        try:
+            # A window that is still zoomed would re-appear maximised after
+            # deiconify, which is what made the "big window" come back.
+            self.root.state("normal")
+        except tk.TclError:
+            pass
+
+        hidden = False
+        try:
+            self.root.withdraw()
+            hidden = True
+        except tk.TclError:
+            pass
+
         target = self._startup_scale or self.scale
         self._rebuild_screens(target)
         self._apply_window_size()
+        self._center_window()
 
-        position = self._startup_pos or self._windowed_pos
-        if position:
+        if hidden:
             try:
-                self.root.geometry(f"+{max(0, position[0])}+{max(0, position[1])}")
+                self.root.deiconify()
+                self.root.lift()
             except tk.TclError:
                 pass
+            # Re-assert size/position once the window is mapped again.
+            self._apply_window_size()
+            self._center_window()
 
-        if self._configure_after is not None:
-            try:
-                self.root.after_cancel(self._configure_after)
-            except tk.TclError:
-                pass
-            self._configure_after = None
-        self.root.after(500, self._release_resize_guard)
+        self.root.after(120, self._reapply_titlebar)
+        self.root.after(600, self._release_resize_guard)
+
+    def _center_window(self) -> None:
+        """Put the window in the middle of the screen."""
+        try:
+            self.root.update_idletasks()
+            screen_w = self.root.winfo_screenwidth()
+            screen_h = self.root.winfo_screenheight()
+            width = self.root.winfo_width()
+            height = self.root.winfo_height()
+            x = max(0, (screen_w - width) // 2)
+            y = max(0, (screen_h - height) // 2 - 20)
+            self.root.geometry(f"{width}x{height}+{x}+{y}")
+            self.root.update_idletasks()
+        except tk.TclError:
+            pass
 
     def _release_resize_guard(self) -> None:
         self._suppress_resize = False
