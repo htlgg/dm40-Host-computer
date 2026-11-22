@@ -53,6 +53,14 @@ class DM40App:
         self.root.title(t("app.title"))
         self.root.resizable(True, True)
         self._apply_window_icon()
+        # Apply dark caption as early as possible – some Windows builds only
+        # honour the attribute while the frame is being created.
+        try:
+            from gui.win_titlebar import apply_windows_titlebar
+
+            apply_windows_titlebar(self.root)
+        except Exception:
+            pass
         self.root.configure(bg=rgb_hex("background"))
 
         self._ui_column = tk.Frame(root, bg=rgb_hex("background"))
@@ -615,4 +623,23 @@ class DM40App:
 def run_app() -> None:
     root = tk.Tk()
     DM40App(root)
+    # Last chance before the event loop: the frame now exists for real.
+    try:
+        root.update_idletasks()
+        from gui.win_titlebar import apply_windows_titlebar
+
+        apply_windows_titlebar(root)
+    except Exception:
+        pass
+    root.after(1200, lambda: _reapply_titlebar(root))
     root.mainloop()
+
+
+def _reapply_titlebar(root: tk.Tk) -> None:
+    try:
+        from gui.win_titlebar import apply_windows_titlebar
+
+        if root.winfo_exists():
+            apply_windows_titlebar(root)
+    except Exception:
+        pass

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import ctypes
 import sys
 import tkinter as tk
 
@@ -33,7 +34,9 @@ def _hwnd(root: tk.Tk) -> int | None:
         if not wid:
             return None
         hwnd = user32.GetParent(ctypes.c_void_p(wid))
-        return int(hwnd) if hwnd else int(wid)
+        # Before the window is mapped there is no wrapper yet – targeting the
+        # TkChild would be useless, so report "not ready".
+        return int(hwnd) if hwnd else None
     except Exception:
         return None
 
