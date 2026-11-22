@@ -51,9 +51,11 @@ RANGE_INDEX_ACTIONS = tuple(f"range_index_{index}" for index in range(1, 10))
 MODE_ACTIONS = tuple(f"mode_{index}" for index in range(1, 7))
 
 ACTION_ORDER: tuple[str, ...] = (
-    RANGE_ACTIONS + ("save_reading", "clear_readings", "hold", "toggle_rel")
+    # Background-mode toggle sits first – it is the one people look for.
+    ("toggle_global",)
+    + RANGE_ACTIONS + ("save_reading", "clear_readings", "hold", "toggle_rel")
     + RANGE_INDEX_ACTIONS + MODE_ACTIONS
-    + ("toggle_global", "toggle_fullscreen", "back")
+    + ("toggle_fullscreen", "back")
 )
 
 DEFAULT_HOTKEY_MAP: dict[str, str] = {

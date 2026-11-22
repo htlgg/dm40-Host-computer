@@ -838,7 +838,7 @@ def run_checks(root: tk.Tk, app) -> None:
     canvas.event_generate("<Button-1>", x=200, y=hotkey_layout.VIEW_TOP + 12)
     root.update()
     check("row click arms a capture", app.hotkeys.capturing, True)
-    check("row click armed the first row", app.hotkeys_screen._capture_action, "range_next")
+    check("row click armed the first row", app.hotkeys_screen._capture_action, "toggle_global")
     app.hotkeys_screen.cancel_capture()
     app.show_main_screen()
 
