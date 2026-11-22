@@ -657,6 +657,17 @@ class MainScreen(tk.Frame):
             debug=dbg, debug_color="#8060c0",
         )
 
+        # Bluetooth icon → device picker (needed when several meters are around).
+        bx, by = L.BT_IMG
+        pad = 8
+        bind_clickable(
+            self.canvas,
+            self._s(bx - pad), self._s(by - pad),
+            self._s(L.TOP_BAR_BT_W + 2 * pad), self._s(L.TOP_BAR_ICON_H + 2 * pad),
+            self.open_device_picker, tag="hit_bt",
+            debug=dbg, debug_color="#20a0a0",
+        )
+
         self._rebind_mode_hotspots(L.mode_button_slots(mini=self._mini_mode))
         self._bind_main_value_save()
         self.raise_click_layer()
@@ -718,6 +729,10 @@ class MainScreen(tk.Frame):
     def toggle_relative(self) -> bool:
         """Relative reading on/off (the REL button on the graph)."""
         return self._graph.toggle_relative()
+
+    def open_device_picker(self) -> None:
+        """Open the device list again so another meter can be selected."""
+        self.app.show_connect_screen(auto_scan=True)
 
     def save_reading(self) -> None:
         """Store the current reading in the save slots (same as clicking the digits)."""

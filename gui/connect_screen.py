@@ -11,6 +11,7 @@ from ble.discovery import DM40Device, scan_ble_devices_sync
 from core.config import SCREEN_HEIGHT, SCREEN_WIDTH
 from core.i18n import t
 from gui import connect_layout as CL
+from gui import range_layout as RL
 from gui import layout as L
 from gui.assets import bind_clickable, raise_click_hotspots
 from gui.sprites import SpriteCache
@@ -73,6 +74,8 @@ class ConnectScreen(tk.Frame):
         )
         self._set_status(t("setup.status_initial"))
         self._place_settings_icon()
+        self._place_back_icon()
+        self._bind_back()
 
     def _place_settings_icon(self) -> None:
         """Settings icon in the top bar (same position as main screen)."""
@@ -84,6 +87,29 @@ class ConnectScreen(tk.Frame):
         bind_clickable(
             self.canvas, self._s(sx), self._s(sy), self._s(sw), self._s(sh),
             self.app.show_settings_screen, tag="connect_hit_settings",
+        )
+
+    def _has_device(self) -> bool:
+        return bool((self.app.settings.get("target_mac") or "").strip())
+
+    def _place_back_icon(self) -> None:
+        """Back arrow – only when a meter is already configured."""
+        if not self._has_device():
+            return
+        photo = self.sprites.range_menu_sprite(
+            "back.png", self.scale, max_h=self._s(L.TOP_BAR_H - 12),
+        )
+        if photo:
+            self._show_sprite("back", photo,
+                              self._s(RL.RANGE_BACK_IMG[0]), self._s(RL.RANGE_BACK_IMG[1]))
+
+    def _bind_back(self) -> None:
+        if not self._has_device():
+            return
+        bx, by, bw, bh = RL.range_back_hit()
+        bind_clickable(
+            self.canvas, self._s(bx), self._s(by), self._s(bw), self._s(bh),
+            self.app.show_main_screen, tag="connect_hit_back",
         )
 
     def _set_status(self, text: str) -> None:

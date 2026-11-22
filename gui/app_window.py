@@ -48,6 +48,7 @@ class DM40App:
         self._client_w = int(display_layout.SCREEN_W * self.scale)
         self._rebuilding = False
         self._fullscreen = False
+        self._zoomed = False
         self._suppress_resize = False
         self._startup_scale = self.scale
         self._startup_pos: tuple[int, int] | None = None
@@ -246,6 +247,7 @@ class DM40App:
             width = self.root.winfo_width()
             height = self.root.winfo_height()
             fullscreen = bool(self.root.attributes("-fullscreen"))
+            zoomed = self.root.state() == "zoomed"
         except tk.TclError:
             return
 
@@ -254,6 +256,18 @@ class DM40App:
             self._exit_fullscreen()
             return
         self._fullscreen = fullscreen
+
+        # Maximise button: scale while maximised, but come back to the startup
+        # size when the window is restored again (same as the full screen path).
+        if zoomed and not self._zoomed:
+            self._zoomed = True
+            self._windowed_scale = self.scale
+            self._windowed_pos = (self.root.winfo_x(), self.root.winfo_y())
+        elif not zoomed and self._zoomed:
+            self._zoomed = False
+            self._restore_windowed_state()
+            return
+
         if width < 80 or height < 60:
             return
         logical_h = self._logical_height_with_console()
@@ -277,12 +291,15 @@ class DM40App:
     def _exit_fullscreen(self) -> None:
         """Return to the startup ratio and position (not the huge screen size)."""
         self._fullscreen = False
-        self._suppress_resize = True
         try:
             self.root.attributes("-fullscreen", False)
         except tk.TclError:
             pass
+        self._restore_windowed_state()
 
+    def _restore_windowed_state(self) -> None:
+        """Back to the startup scale, size and position."""
+        self._suppress_resize = True
         target = self._startup_scale or self.scale
         self._rebuild_screens(target)
         self._apply_window_size()
@@ -413,6 +430,7 @@ class DM40App:
             self._rebuilding = False
         if not self._fullscreen:
             self._apply_window_size()
+        self.root.after(220, self._reapply_titlebar)
 
     def _apply_window_icon(self) -> None:
         """Show the DM40 icon in the title bar / taskbar instead of Tk's feather."""
